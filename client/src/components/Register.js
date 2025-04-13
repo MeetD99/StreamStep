@@ -38,7 +38,7 @@ const Register = () => {
 
         try {
             const { confirmPassword, ...registerData } = formData;
-            const response = await axios.post('https://stream-step-hzsn.vercel.app/api/auth/register', registerData);
+            const response = await axios.post('https://stream-step-backend.onrender.com//api/auth/register', registerData);
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.user));
             navigate('/dashboard');
