@@ -15,15 +15,27 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-    origin: ['https://stream-step.vercel.app', 'http://localhost:3000'],
+    origin: function (origin, callback) {
+        const allowedOrigins = ['https://stream-step.vercel.app', 'http://localhost:3000'];
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    credentials: true,
+    maxAge: 600 // Cache preflight requests for 10 minutes
 };
 
 // Middleware
 app.use(cors(corsOptions));
 app.use(express.json());
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/streamstep', {
