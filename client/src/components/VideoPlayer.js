@@ -15,7 +15,7 @@ const VideoPlayer = ({ videoId, videoUrl, videoLength }) => {
         const loadProgress = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get(`https://stream-step-backend.onrender.com//api/progress/${videoId}`, {
+                const response = await axios.get(`https://stream-step-backend.onrender.com/api/progress/${videoId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setProgress(response.data.progress);
@@ -62,7 +62,7 @@ const VideoPlayer = ({ videoId, videoUrl, videoLength }) => {
             try {
                 const token = localStorage.getItem('token');
                 await axios.post(
-                    `https://stream-step-backend.onrender.com//api/progress/${videoId}`,
+                    `https://stream-step-backend.onrender.com/api/progress/${videoId}`,
                     {
                         startTime: currentInterval.start,
                         endTime: currentInterval.end,
