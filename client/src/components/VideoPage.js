@@ -11,7 +11,7 @@ import {
     CardContent
 } from '@mui/material';
 import VideoPlayer from './VideoPlayer';
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 
 const VideoPage = () => {
     const { videoId } = useParams();
@@ -22,21 +22,11 @@ const VideoPage = () => {
     useEffect(() => {
         const fetchVideoData = async () => {
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    navigate('/login');
-                    return;
-                }
-
-                const response = await axios.get(`https://stream-step-hzsn.vercel.app/api/videos/${videoId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-
+                const response = await api.get(`/videos/${videoId}`);
                 if (!response.data) {
                     setError('Video not found');
                     return;
                 }
-
                 setVideoData(response.data);
             } catch (error) {
                 console.error('Error fetching video data:', error);
@@ -45,7 +35,7 @@ const VideoPage = () => {
         };
 
         fetchVideoData();
-    }, [videoId, navigate]);
+    }, [videoId]);
 
     if (error) {
         return (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactPlayer from 'react-player';
 import { Box, LinearProgress, Typography } from '@mui/material';
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 
 const VideoPlayer = ({ videoId, videoUrl, videoLength }) => {
     const [progress, setProgress] = useState(0);
@@ -14,10 +14,7 @@ const VideoPlayer = ({ videoId, videoUrl, videoLength }) => {
     useEffect(() => {
         const loadProgress = async () => {
             try {
-                const token = localStorage.getItem('token');
-                const response = await axios.get(`https://stream-step-hzsn.vercel.app/api/progress/${videoId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await api.get(`/progress/${videoId}`);
                 setProgress(response.data.progress);
                 setWatchedIntervals(response.data.watchedIntervals);
                 
@@ -60,18 +57,11 @@ const VideoPlayer = ({ videoId, videoUrl, videoLength }) => {
         
         if (currentInterval.start !== currentInterval.end) {
             try {
-                const token = localStorage.getItem('token');
-                await axios.post(
-                    `https://stream-step-hzsn.vercel.app/api/progress/${videoId}`,
-                    {
-                        startTime: currentInterval.start,
-                        endTime: currentInterval.end,
-                        videoLength
-                    },
-                    {
-                        headers: { Authorization: `Bearer ${token}` }
-                    }
-                );
+                await api.post(`/progress/${videoId}`, {
+                    startTime: currentInterval.start,
+                    endTime: currentInterval.end,
+                    videoLength
+                });
             } catch (error) {
                 console.error('Error saving progress:', error);
             }
