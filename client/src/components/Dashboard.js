@@ -12,7 +12,7 @@ import {
     CardMedia,
     CardActions
 } from '@mui/material';
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 
 const Dashboard = () => {
     const [videos, setVideos] = useState([]);
@@ -22,14 +22,9 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem('token');
                 const [videosResponse, progressResponse] = await Promise.all([
-                    axios.get('https://stream-step-hzsn.vercel.app/api/videos', {
-                        headers: { Authorization: `Bearer ${token}` }
-                    }),
-                    axios.get('https://stream-step-hzsn.vercel.app/api/progress', {
-                        headers: { Authorization: `Bearer ${token}` }
-                    })
+                    api.get('/videos'),
+                    api.get('/progress')
                 ]);
                 
                 // Merge videos with progress data
