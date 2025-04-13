@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box,
-    TextField,
     Button,
+    TextField,
     Typography,
     Container,
     Paper,
-    Alert
+    Link
 } from '@mui/material';
-import api from '../utils/axiosConfig';
+import axios from 'axios';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -30,13 +30,15 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match');
             return;
         }
+
         try {
             const { confirmPassword, ...registerData } = formData;
-            const response = await api.post('/auth/register', registerData);
+            const response = await axios.post('https://stream-step-hzsn.vercel.app/api/auth/register', registerData);
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.user));
             navigate('/dashboard');
@@ -46,68 +48,79 @@ const Register = () => {
     };
 
     return (
-        <Container maxWidth="sm">
-            <Box sx={{ mt: 8 }}>
-                <Paper elevation={3} sx={{ p: 4 }}>
-                    <Typography variant="h4" component="h1" gutterBottom align="center">
-                        Register
+        <Container component="main" maxWidth="xs">
+            <Paper elevation={3} sx={{ p: 4, mt: 8 }}>
+                <Typography component="h1" variant="h5" align="center" gutterBottom>
+                    Register
+                </Typography>
+                {error && (
+                    <Typography color="error" align="center" sx={{ mb: 2 }}>
+                        {error}
                     </Typography>
-                    {error && (
-                        <Alert severity="error" sx={{ mb: 2 }}>
-                            {error}
-                        </Alert>
-                    )}
-                    <form onSubmit={handleSubmit}>
-                        <TextField
-                            fullWidth
-                            label="Username"
-                            name="username"
-                            value={formData.username}
-                            onChange={handleChange}
-                            margin="normal"
-                            required
-                        />
-                        <TextField
-                            fullWidth
-                            label="Email"
-                            name="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            margin="normal"
-                            required
-                        />
-                        <TextField
-                            fullWidth
-                            label="Password"
-                            name="password"
-                            type="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            margin="normal"
-                            required
-                        />
-                        <TextField
-                            fullWidth
-                            label="Confirm Password"
-                            name="confirmPassword"
-                            type="password"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            margin="normal"
-                            required
-                        />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                        >
-                            Register
-                        </Button>
-                    </form>
-                </Paper>
-            </Box>
+                )}
+                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="username"
+                        label="Username"
+                        name="username"
+                        autoComplete="username"
+                        autoFocus
+                        value={formData.username}
+                        onChange={handleChange}
+                    />
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="email"
+                        label="Email Address"
+                        name="email"
+                        autoComplete="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                    />
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="password"
+                        label="Password"
+                        type="password"
+                        id="password"
+                        autoComplete="new-password"
+                        value={formData.password}
+                        onChange={handleChange}
+                    />
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="confirmPassword"
+                        label="Confirm Password"
+                        type="password"
+                        id="confirmPassword"
+                        autoComplete="new-password"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                    />
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        Sign Up
+                    </Button>
+                    <Box sx={{ textAlign: 'center' }}>
+                        <Link href="/login" variant="body2">
+                            Already have an account? Sign In
+                        </Link>
+                    </Box>
+                </Box>
+            </Paper>
         </Container>
     );
 };

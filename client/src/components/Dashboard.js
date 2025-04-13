@@ -5,28 +5,36 @@ import {
     Typography,
     Container,
     Button,
-    LinearProgress,
     Grid,
     Card,
     CardContent,
     CardMedia,
-    CardActions
+    CardActions,
+    LinearProgress,
+    Alert,
+    CircularProgress
 } from '@mui/material';
-import api from '../utils/axiosConfig';
+import axios from 'axios';
 
 const Dashboard = () => {
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const token = localStorage.getItem('token');
                 const [videosResponse, progressResponse] = await Promise.all([
-                    api.get('/videos'),
-                    api.get('/progress')
+                    axios.get('https://stream-step-hzsn.vercel.app/api/videos', {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }),
+                    axios.get('https://stream-step-hzsn.vercel.app/api/progress', {
+                        headers: { Authorization: `Bearer ${token}` }
+                    })
                 ]);
-                
+
                 // Merge videos with progress data
                 const videosWithProgress = videosResponse.data.map(video => {
                     const progress = progressResponse.data.find(p => p.videoId === video._id) || {
@@ -44,6 +52,7 @@ const Dashboard = () => {
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching data:', error);
+                setError('Failed to load videos. Please try again later.');
                 setLoading(false);
             }
         };
@@ -65,6 +74,16 @@ const Dashboard = () => {
         return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
     };
 
+    if (loading) {
+        return (
+            <Container maxWidth="lg">
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+                    <CircularProgress />
+                </Box>
+            </Container>
+        );
+    }
+
     return (
         <Container maxWidth="lg">
             <Box sx={{ my: 4 }}>
@@ -77,24 +96,42 @@ const Dashboard = () => {
                     </Button>
                 </Box>
 
-                {loading ? (
-                    <Typography>Loading...</Typography>
+                {error && (
+                    <Alert severity="error" sx={{ mb: 3 }}>
+                        {error}
+                    </Alert>
+                )}
+
+                {videos.length === 0 ? (
+                    <Alert severity="info">
+                        No videos available. Please check back later.
+                    </Alert>
                 ) : (
                     <Grid container spacing={3}>
                         {videos.map((video) => (
                             <Grid item xs={12} sm={6} md={4} key={video._id}>
-                                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                <Card sx={{ 
+                                    height: '100%', 
+                                    display: 'flex', 
+                                    flexDirection: 'column',
+                                    transition: 'transform 0.2s',
+                                    '&:hover': {
+                                        transform: 'scale(1.02)',
+                                        boxShadow: 3
+                                    }
+                                }}>
                                     <CardMedia
                                         component="img"
-                                        height="140"
+                                        height="200"
                                         image={video.thumbnail}
                                         alt={video.title}
+                                        sx={{ objectFit: 'cover' }}
                                     />
                                     <CardContent sx={{ flexGrow: 1 }}>
                                         <Typography gutterBottom variant="h5" component="h2">
                                             {video.title}
                                         </Typography>
-                                        <Typography variant="body2" color="text.secondary">
+                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                                             {video.description}
                                         </Typography>
                                         <Box sx={{ mt: 2 }}>
@@ -117,6 +154,7 @@ const Dashboard = () => {
                                             variant="contained"
                                             onClick={() => navigate(`/video/${video._id}`)}
                                             fullWidth
+                                            sx={{ mb: 1 }}
                                         >
                                             {video.progress > 0 ? 'Continue Watching' : 'Start Watching'}
                                         </Button>
