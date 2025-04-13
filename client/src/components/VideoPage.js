@@ -28,7 +28,7 @@ const VideoPage = () => {
                     return;
                 }
 
-                const response = await axios.get(`http://localhost:5000/api/videos/${videoId}`, {
+                const response = await axios.get(`https://stream-step-hzsn.vercel.app/api/videos/${videoId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 

@@ -24,10 +24,10 @@ const Dashboard = () => {
             try {
                 const token = localStorage.getItem('token');
                 const [videosResponse, progressResponse] = await Promise.all([
-                    axios.get('http://localhost:5000/api/videos', {
+                    axios.get('https://stream-step-hzsn.vercel.app/api/videos', {
                         headers: { Authorization: `Bearer ${token}` }
                     }),
-                    axios.get('http://localhost:5000/api/progress', {
+                    axios.get('https://stream-step-hzsn.vercel.app/api/progress', {
                         headers: { Authorization: `Bearer ${token}` }
                     })
                 ]);
