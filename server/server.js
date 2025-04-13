@@ -14,7 +14,7 @@ const videoRoutes = require('./routes/videos');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({origin: 'https://stream-step.vercel.app'}));
 app.use(express.json());
 
 // MongoDB Connection
