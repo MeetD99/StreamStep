@@ -43,6 +43,12 @@ const VideoPlayer = ({ videoId, videoUrl, videoLength }) => {
         loadProgress();
     }, [videoId]);
 
+    useEffect(() => {
+        if (!loading && playerRef.current && lastUnwatchedPosition > 0) {
+            playerRef.current.seekTo(lastUnwatchedPosition, 'seconds');
+        }
+    }, [loading, lastUnwatchedPosition]);
+
     const handleProgress = (state) => {
         if (isPlaying) {
             setCurrentInterval(prev => ({
@@ -122,7 +128,6 @@ const VideoPlayer = ({ videoId, videoUrl, videoLength }) => {
                         config={{
                             youtube: {
                                 playerVars: {
-                                    start: Math.floor(lastUnwatchedPosition),
                                     autoplay: 0
                                 }
                             }
