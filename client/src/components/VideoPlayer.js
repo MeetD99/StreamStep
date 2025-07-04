@@ -10,6 +10,7 @@ const VideoPlayer = ({ videoId, videoUrl, videoLength }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [lastUnwatchedPosition, setLastUnwatchedPosition] = useState(0);
     const playerRef = useRef(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const loadProgress = async () => {
@@ -32,8 +33,10 @@ const VideoPlayer = ({ videoId, videoUrl, videoLength }) => {
                 }
                 
                 setLastUnwatchedPosition(lastUnwatched);
+                setLoading(false);
             } catch (error) {
                 console.error('Error loading progress:', error);
+                setLoading(false);
             }
         };
 
@@ -77,6 +80,10 @@ const VideoPlayer = ({ videoId, videoUrl, videoLength }) => {
             }
         }
     };
+
+    if (loading) {
+        return <Box sx={{ textAlign: 'center', mt: 4 }}><Typography>Loading video progress...</Typography></Box>;
+    }
 
     return (
         <Box sx={{ 
