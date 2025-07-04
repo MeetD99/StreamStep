@@ -11,6 +11,7 @@ const VideoPlayer = ({ videoId, videoUrl, videoLength }) => {
     const [lastUnwatchedPosition, setLastUnwatchedPosition] = useState(0);
     const playerRef = useRef(null);
     const [loading, setLoading] = useState(true);
+    const [hasSeeked, setHasSeeked] = useState(false);
 
     useEffect(() => {
         const loadProgress = async () => {
@@ -58,10 +59,23 @@ const VideoPlayer = ({ videoId, videoUrl, videoLength }) => {
         }
     };
 
+    const handleReady = () => {
+        if (!hasSeeked && lastUnwatchedPosition > 0 && playerRef.current) {
+            playerRef.current.seekTo(lastUnwatchedPosition, 'seconds');
+            setHasSeeked(true);
+        }
+    };
+
     const handlePlay = () => {
         setIsPlaying(true);
         const currentTime = playerRef.current.getCurrentTime();
         setCurrentInterval({ start: currentTime, end: currentTime });
+
+        // Fallback: Seek on play if not already seeked
+        if (!hasSeeked && lastUnwatchedPosition > 0 && playerRef.current) {
+            playerRef.current.seekTo(lastUnwatchedPosition, 'seconds');
+            setHasSeeked(true);
+        }
     };
 
     const handlePause = async () => {
@@ -124,6 +138,7 @@ const VideoPlayer = ({ videoId, videoUrl, videoLength }) => {
                         onProgress={handleProgress}
                         onPlay={handlePlay}
                         onPause={handlePause}
+                        onReady={handleReady}
                         playing={false}
                         config={{
                             youtube: {
